@@ -1,27 +1,37 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Video{
-  id String @id @default(cuid())
-  title String
-  description String?
-  publicId String
-  originalsize String
+model User {
+  id               String   @id @default(uuid())
+  clerkUserId      String   @unique
+  email            String   @unique
+  plan             String   @default("free")
+  uploadsThisMonth Int      @default(0)
+  uploadLimit      Int      @default(10)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // relation: one user can have many videos
+  videos Video[]
+}
+
+model Video {
+  id             String   @id @default(cuid())
+  publicId       String
+  originalsize   String
   compressedsize String
-  duration String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  captionsUrl    String?
+  duration       Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // relation: each video belongs to one user
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 }
