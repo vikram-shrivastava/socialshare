@@ -83,7 +83,7 @@ export async function POST(request) {
     }
     let captionsUrl = null;
     let transcriptionError = null;
-    if(captionneeded){
+    
       // --- call FastAPI Whisper API ---
       const form = new FormData();
       form.append("file", file, file.name);
@@ -120,7 +120,7 @@ export async function POST(request) {
         console.warn('Caption generation failed:', error.message);
         transcriptionError = error.message;
       }
-    }
+    
 
     // save video in DB (with or without captions)
     const video = await prisma.video.create({
